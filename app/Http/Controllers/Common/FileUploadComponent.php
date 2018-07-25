@@ -30,9 +30,9 @@ class FileUploadComponent extends Controller
             $destinationPath = $path; //public_path('/uploads/posts');
             $imagePath = $destinationPath. "/".  $name;
             $image->move($destinationPath, $name);
-            $posts->image_name['name'] = $name;
+            //$posts->image_name['name'] = $name;
         }
-        return $posts->image_name['name'];
+        return $name;
     }
 
 }
