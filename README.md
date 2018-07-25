@@ -16,7 +16,7 @@ php artisan make:model Comment -m -c --resource
 ```php
 Route::group( ['middleware' => ['auth']], function() {
     ...
-    Route::resource('comments', 'CommentController');
+    Route::resource('Artical', 'ArticalController');
 });
 ```
 
@@ -24,7 +24,7 @@ Route::group( ['middleware' => ['auth']], function() {
 ```php
 use App\Authorizable;
 
-class CommentController extends Controller
+class ArticalController extends Controller
 {
     use Authorizable;
     ...
@@ -67,9 +67,11 @@ Created by ACL
 
 Use full Link
 #https://www.qcode.in/advance-interactive-database-seeding-in-laravel/
-#Admin Lte.
-#Boostrep
-#Jquery
+
+###
+Admin Lte.
+Boostrep
+Jquery
 
 
 ####
