@@ -27,10 +27,15 @@ use App\Authorizable;
 class ArticalController extends Controller
 {
     use Authorizable;
-    ...
+    public function index()
+    {
+        //
+    }
+    
+}    
 ```
 
-4. Now add the permissions for this new `Artical` model.
+4. Now Add the permissions for this new `Artical` model.
 ```bash
 php artisan auth:permission Artical
 ```
@@ -47,35 +52,40 @@ php artisan auth:permission Artical
 ## remove permissions
 php artisan auth:permission Artical --remove
 ```
+```
 ##If Migration problem rise.run this command
 ##php artisan cache:clear
 ##php artisan view:clear
 ##php artisan route:clear
 ##php artisan clear-compiled
 ##php artisan config:cache
+```
 
 ####
+```
 Migration 
 
-```
 php artisan migrate
 php artisan migrate:rollback
-```
 
+```
 ### Author
 Created by ACL
 
 Use full Link
 #https://www.qcode.in/advance-interactive-database-seeding-in-laravel/
 
+```
 ###
+```
 Admin Lte.
 Boostrep
 Jquery
 
-
+```
 ####
+```
 Tnicy mac Editor Add and Image Upload with Editor
-####
 excle and CSV Upload Module
+```
 # laravel_role
