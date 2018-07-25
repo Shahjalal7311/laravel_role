@@ -30,9 +30,9 @@ class CommentController extends Controller
     ...
 ```
 
-4. Now add the permissions for this new `Comment` model.
+4. Now add the permissions for this new `Artical` model.
 ```bash
-php artisan auth:permission Comment
+php artisan auth:permission Artical
 ```
 
 That's it, you have added new resource controller which have full access control by laravel permissions.
@@ -42,10 +42,10 @@ That's it, you have added new resource controller which have full access control
  
  ```bash
 ## add permission
-php artisan auth:permission Comment
+php artisan auth:permission Artical
 
 ## remove permissions
-php artisan auth:permission Comment --remove
+php artisan auth:permission Artical --remove
 ```
 ##If Migration problem rise.run this command
 ##php artisan cache:clear
@@ -64,6 +64,13 @@ php artisan migrate:rollback
 
 ### Author
 Created by ACL
+
+Use full Link
+#https://www.qcode.in/advance-interactive-database-seeding-in-laravel/
+#Admin Lte.
+#Boostrep
+#Jquery
+
 
 ####
 Tnicy mac Editor Add and Image Upload with Editor
