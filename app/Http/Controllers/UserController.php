@@ -7,7 +7,11 @@ use App\Role;
 use App\Permission;
 use App\Authorizable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -182,5 +186,73 @@ class UserController extends Controller
         $user->syncRoles($roles);
 
         return $user;
+    }
+
+    /**
+     * password change
+     *
+     * @param Request $request
+     * @param $user
+     * @return string
+     */
+
+    public function changePassword(){
+        $title = 'change user password';
+        return view('user.changepass', compact('title'));
+    }
+
+
+    public function admin_credential_rules(array $data){
+      $messages = [
+        'current-password.required' => 'Please enter current password',
+        'password.required' => 'Please enter password',
+      ];
+
+      $validator = Validator::make($data, [
+        'current-password' => 'required',
+        'password' => 'required|same:password',
+        'password_confirmation' => 'required|same:password',     
+      ], $messages);
+
+      return $validator;
+    }  
+
+
+  public function postCredentials(Request $request){
+
+      if(Auth::Check())
+      {
+        $request_data = $request->All();
+        $validator = $this->admin_credential_rules($request_data);
+        if($validator->fails())
+        {
+          $request->session()->flash('warning', => $validator->getMessageBag()->toArray());
+          return view('user.changepass');
+          //return response()->json(array('error' => $validator->getMessageBag()->toArray()), 400);
+        }
+        else
+        {  
+          $current_password = Auth::User()->password;       
+          if(Hash::check($request_data['current-password'], $current_password))
+          {           
+            $user_id = Auth::User()->id;                       
+            $obj_user = User::find($user_id);
+            $obj_user->password = Hash::make($request_data['password']);
+            $obj_user->save();
+            $request->session()->flash('success', 'User password has been updated!');
+            return view('user.changepass');
+          }
+          else
+          {           
+            $request->session()->flash('warning', 'User password not updated.please try agin!'); 
+             return view('user.changepass');
+          }
+        }        
+      }
+      else
+      {
+        $request->session()->flash('warning', 'User Name or Password incorrect.please try agin!');
+        return view('user.changepass');
+      }    
     }
 }

@@ -1,17 +1,11 @@
-@extends('layouts.app')
+@extends('layouts.app_admin')
 
 @section('title', 'Posts')
 
 @section('content')
 
 <section class="content-header">
-  <h1>
-    Dashboard
-  </h1>
-  <ol class="breadcrumb">
-    <li><a href="#"><i class="fa fa-dashboard"></i> Admin</a></li>
-    <li class="active">Artical</li>
-  </ol>
+  @include('partial.breadcome')
 </section>
 
 <section class="content">
@@ -28,9 +22,11 @@
                 @endcan
               </div>
               <div class="pull-right">
+                 @can('import_articals')
                   <a href="{{ route('add') }}" class="btn btn-primary btn-sm" style="margin-right: 20px;"> 
                       <i class="glyphicon glyphicon-plus-sign"></i> Import
                   </a>
+                  @endcan
               </div>
             </div>
             <!-- /.box-header -->

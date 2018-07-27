@@ -20,7 +20,7 @@ class CreateArticalsTable extends Migration
             $table->text('body');
             $table->string('image_name');
             $table->string('thum_img');
-            $table->integer('is_delete',1)->default('1');
+            $table->integer('is_delete')->default('1');
             $table->foreign('user_id')
                 ->references('id')->on('users')
                 ->onDelete('cascade');

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app_admin')
 
 @section('title', 'Roles & Permissions')
 
@@ -33,13 +33,7 @@
         </div>
     </div>
 <section class="content-header">
-  <h1>
-    Dashboard
-  </h1>
-  <ol class="breadcrumb">
-    <li><a href="#"><i class="fa fa-dashboard"></i> Admin</a></li>
-    <li class="active">Role</li>
-  </ol>
+  @include('partial.breadcome')
 </section>
  <section class="content">
     <div class="row">
@@ -68,14 +62,14 @@
                                           'title' => $role->name .' Permissions',
                                           'model' => $role ])
                             @can('edit_roles')
-                                {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
+                              {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
                             @endcan
                         @endif
 
                         {!! Form::close() !!}
 
                     @empty
-                        <p>No Roles defined, please run <code>php artisan db:seed</code> to seed some dummy data.</p>
+                        <p>No Roles defined, please run define role</p>
                     @endforelse
             </div>
           </div>

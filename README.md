@@ -40,6 +40,19 @@ class ArticalController extends Controller
 php artisan auth:permission Artical
 ```
 
+5. Now Add the permissions for this new `Artical` model.
+```bash
+permission model
+
+like 
+'view_users',
+'add_users',
+'edit_users',
+'delete_users',
+'import_users',
+'print_users',
+```
+
 That's it, you have added new resource controller which have full access control by laravel permissions.
  
  ### auth:permission command

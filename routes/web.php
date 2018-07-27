@@ -20,11 +20,13 @@ Auth::routes();
 Route::get('/admin/dashboard', 'HomeController@index')->name('home');
 
 Route::group( ['middleware' => ['auth']], function() {
-    Route::resource('/admin/users', 'UserController');
-    Route::resource('/admin/roles', 'RoleController');
-    Route::resource('/admin/posts', 'PostController');
-    Route::resource('/admin/articals', 'ArticalController');
-    Route::get('/admin/add', 'PostController@csvupload')->name('add');
-    Route::post('/admin/import', 'PostController@import')->name('import');
-    Route::get('/admin/isactive/{post_id}/{value}', ['uses'=>'PostController@isactive']);
+  Route::resource('/admin/users', 'UserController');
+  Route::resource('/admin/roles', 'RoleController');
+  Route::resource('/admin/posts', 'PostController');
+  Route::resource('/admin/articals', 'ArticalController');
+  Route::get('/admin/csv-upload/add', 'PostController@csvupload')->name('add');
+  Route::post('/admin/csv-upload/import', 'PostController@import')->name('import');
+  Route::get('/admin/isactive/{post_id}/{value}', ['uses'=>'PostController@isactive']);
+  Route::get('/admin/user/passwordchange', 'UserController@changePassword')->name('passwordchange');
+  Route::post('/admin/user/postCredentials', 'UserController@postCredentials')->name('postCredentials');
 });
