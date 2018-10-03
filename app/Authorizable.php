@@ -17,6 +17,7 @@ trait Authorizable
         'edit' => 'edit',
         'show' => 'view',
         'update' => 'edit',
+        'print' => 'print',
         'create' => 'add',
         'store' => 'add',
         'destroy' => 'delete',

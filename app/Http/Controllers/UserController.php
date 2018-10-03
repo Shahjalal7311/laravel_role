@@ -220,18 +220,13 @@ class UserController extends Controller
 
   public function postCredentials(Request $request){
 
-      if(Auth::Check())
-      {
-        $request_data = $request->All();
-        $validator = $this->admin_credential_rules($request_data);
-        if($validator->fails())
-        {
-          $request->session()->flash('warning', => $validator->getMessageBag()->toArray());
+      if(Auth::Check()){
+            $request_data = $request->All();
+            $validator = $this->admin_credential_rules($request_data);
+        if($validator->fails()){
+          $request->session()->flash('warning','User or Password is incorrect');
           return view('user.changepass');
-          //return response()->json(array('error' => $validator->getMessageBag()->toArray()), 400);
-        }
-        else
-        {  
+        }else{  
           $current_password = Auth::User()->password;       
           if(Hash::check($request_data['current-password'], $current_password))
           {           
@@ -241,16 +236,12 @@ class UserController extends Controller
             $obj_user->save();
             $request->session()->flash('success', 'User password has been updated!');
             return view('user.changepass');
-          }
-          else
-          {           
+          }else{           
             $request->session()->flash('warning', 'User password not updated.please try agin!'); 
              return view('user.changepass');
           }
         }        
-      }
-      else
-      {
+      }else{
         $request->session()->flash('warning', 'User Name or Password incorrect.please try agin!');
         return view('user.changepass');
       }    

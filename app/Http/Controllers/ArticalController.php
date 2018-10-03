@@ -8,10 +8,12 @@ use App\Authorizable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Common\FileUploadComponent;
+use Illuminate\Support\Facades\Storage;
 
 class ArticalController extends Controller
 {
     use Authorizable;
+
     /**
      * Display a listing of the resource.
      *
@@ -24,7 +26,6 @@ class ArticalController extends Controller
             ->with('user')
             ->paginate();
         return view('artical.index', compact('result'));
-        //
     }
 
     /**
@@ -34,8 +35,7 @@ class ArticalController extends Controller
      */
     public function create()
     {
-        //
-        return view('artical.new');
+      return view('artical.new');
     }
 
     /**
@@ -51,25 +51,37 @@ class ArticalController extends Controller
             'title' => 'required|min:10',
             'body' => 'required|min:20',
         ]);
-        // $request->artical_image->store('image_name');
+
         $check_has = $request->hasFile('image_name');
         $file_name = $request->file('image_name');
-        $name = $todate.'.'.$file_name->getClientOriginalExtension();
-        $path_url = public_path('/uploads/articals');
-        //file uploads
-        
+        if(!empty($check_has)){
+            $name = time().'.'.$file_name->getClientOriginalExtension();
+        }else{
+            $name = '';
+        }
+        //file uploads 
         $save_data = [
             'title'=>$request->title,
             'body'=>$request->body,
             'image_name'=>$name,
-            'image_path'=>$path_url,
         ];
         
         $data = $request->user()->articals()->create($save_data);
         if($data->toarray()){
-            $path = $path_url.'/'.$data->id;
-            File::makeDirectory($path, $mode = 0777, true, true);
-            FileUploadComponent::upload($check_has,$file_name, $path, $name);
+            if($request->hasFile('image_name')){
+                $artical = Artical::findOrFail($data->id);
+                 $file = $request->file('image_name');
+                 // $url = 'storage/app/';
+                 //$url = 'https://rv-inspect'.'.s3' .'.ap-northeast-1'. '.amazonaws.com/';
+                 $url = 'https://'.env('AWS_BUCKET').'.s3.' .env('AWS_REGION'). '.amazonaws.com/';
+                 $filePath = 'development/laravel/articals/'.$data->id .'/';
+                 $uploadPath = 'development/laravel/articals/'.$data->id .'/'.$name;
+                 $path = $url.$uploadPath;
+                 $save = Storage::disk('s3')->put($filePath.$name, file_get_contents($file),'public');
+                 Artical::where('id', $data->id)->update([
+                  'upload_path'=>$path,
+                ]);
+             }
             $request->session()->flash('success', 'Record successfully added!');
         }else{
             $request->session()->flash('warning', 'Record not added!');
@@ -122,24 +134,28 @@ class ArticalController extends Controller
         } else {
             $artical = $me->articals()->findOrFail($artical->id);
         }
-
+        
         $check_has = $request->hasFile('image_name');
-        $file_name = $request->file('image_name');
-        $name = $todate.'.'.$file_name->getClientOriginalExtension();
-        $path_url = public_path('/uploads/articals');
-        $path = $path_url.'/'.$artical->id;
-        $imagename = FileUploadComponent::upload($check_has,$file_name, $path, $name);
-        $save_data = [
-            'title'=>$artical->title,
-            'body'=>$artical->body,
-            'image_name'=>$imagename,
-        ];
-
-        $data = $artical->update($save_data);
+        $file = $request->file('image_name');
+        $name = time().'.'.$file->getClientOriginalExtension();
+        $url = 'https://'.env('AWS_BUCKET').'.s3.' .env('AWS_REGION'). '.amazonaws.com/';
+        $filePath = 'development/laravel/articals/'.$artical->id .'/';
+        $uploadPath = 'development/laravel/articals/'.$artical->id .'/'.$name;
+        $path = $url.$uploadPath;
+        // $url = 'storage/app/';
+        // Storage::disk('public')->put($filePath.$name, file_get_contents($file),'public');
+        Storage::disk('s3')->put($filePath.$name, file_get_contents($file),'public');
+        $data = Artical::where('id',$artical->id)
+                ->update([
+                    'title'=>$artical->title,
+                    'body'=>$artical->body,
+                    'image_name'=>$name,
+                    'upload_path'=>$path,
+                ]);
         if($data){
-            $request->session()->flash('success', 'Record successfully added!');
+            $request->session()->flash('success', 'Record successfully Updated!');
         }else{
-            $request->session()->flash('warning', 'Record not added!');
+            $request->session()->flash('warning', 'Record not Updated!');
         }
         return redirect()->route('articals.index');
     }
@@ -155,15 +171,15 @@ class ArticalController extends Controller
         $me = Auth::user();
 
         if($me->hasRole('admin')){
-            $post = Artical::findorFail($artical->id);
+            $artical = Artical::findorFail($artical->id);
         }else{
-            $post = $me->artical()->findorFail($artical->id);
+            $artical = $me->artical()->findorFail($artical->id);
         }
 
-        Artical::where('id',$post->id)
+        Artical::where('id',$artical->id)
                 ->update([
                     'is_delete'=>'0',
-                    'delete_by'=>$post->user_id,
+                    // 'delete_by'=>$artical->user_id,
                 ]);
         flash()->success('Post has been deleted.');
         return redirect()->route('articals.index');        

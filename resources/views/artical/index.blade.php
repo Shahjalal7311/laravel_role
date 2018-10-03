@@ -51,11 +51,15 @@
                             <td>{{ $item->id }}</td>
                             <td>{{ $item->title }}</td>
                             <td>
-                              <?php if((!empty($image_name))){ ?>
-                              <img src="{{asset('uploads/articals').'/'.$item->id.'/'.$image_name}}" width="50" height="50" alt="{{$item->title}}"/>
+                              <!-- <?php if((!($image_name))){ ?>
+                              <img src="<?php  asset("storage/articals/$item->id/$item->image_name")?>" width="50" height="50" alt="{{$item->title}}"/>
                             <?php } else { ?>
                               <img src="{{asset('img/post_dafult.jpg')}}" width="50" height="50" alt="{{$item->title}}"/>
-                            <?php } ?>
+                            <?php } ?> -->
+                            <a href="<?php echo $item->upload_path ?>" target="_blank">
+                              <img src="<?php echo $item->upload_path ?>" width="50" height="50" alt="{{$item->title}}"/>
+                            </a>
+                            
                             </td>
                             <td>{{ $item->user['name'] }}</td>
                             <td>{{ $item->created_at->toFormattedDateString() }}</td>

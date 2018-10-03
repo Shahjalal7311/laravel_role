@@ -8,6 +8,7 @@ use App\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Common\FileUploadComponent;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -53,11 +54,9 @@ class PostController extends Controller
             'body' => 'required|min:20',
             'image_name' => 'required',
         ]);
-
-        $check_has = $request->hasFile('image_name');
+        
         $file_name = $request->file('image_name');
-        $name = $todate.'.'.$file_name->getClientOriginalExtension();
-        $path_url = public_path('/uploads/posts');
+        $name = time().'.'.$file_name->getClientOriginalExtension();
         //file uploads
         
         $post_data = [
@@ -66,10 +65,21 @@ class PostController extends Controller
             'image_name'=>$name,
         ];
         
-        $data = $request->user()->posts()->create($post_data);
-        $path = $path_url.'/'.$data->id;
-        File::makeDirectory($path, $mode = 0777, true, true);
-        FileUploadComponent::upload($check_has,$file_name, $path, $name);
+        $save = $request->user()->posts()->create($post_data);
+        if(!empty($save)){
+            $artical = Post::findOrFail($save->id);
+             $file = $request->file('image_name');
+             $url = 'storage/posts/';
+             //https://s3.' .'ap-northeast-1'. '.amazonaws.com/' .'rv-inspect' . '/';
+             // $name = time() . $file->getClientOriginalName();
+             
+             $filePath = 'posts/'.$save->id .'/'. $name;
+             $path = $url.$filePath;
+             Storage::disk('public')->put($filePath, file_get_contents($file));
+             Post::where('id', $save->id)->update([
+                  'image_path'=>$path,
+                ]);
+         }
         flash('Post has been added');
         return redirect()->back();
     }
@@ -82,6 +92,18 @@ class PostController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Post $post)
+    {
+        //
+    }
+
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Post  $post
+     * @return \Illuminate\Http\Response
+     */
+    public function print(Post $post)
     {
         //
     }

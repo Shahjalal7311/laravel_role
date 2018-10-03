@@ -1,6 +1,6 @@
 <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
 <!-- Title of Post Form Input -->
-{!! Form::select('size', ['1' => 'General info', '2' => 'Other'], 'S', ['class' => 'form-control', 'placeholder' => 'Select Category']); !!}
+<!-- {!! Form::select('size', ['1' => 'General info', '2' => 'Other'], 'S', ['class' => 'form-control', 'placeholder' => 'Select Category']); !!} -->
 
 <div class="form-group @if ($errors->has('title')) has-error @endif">
     {!! Form::label('title', 'Title') !!}
@@ -12,8 +12,8 @@
     {!! Form::label('image_name', 'Photo') !!}
     {!! Form::file('image_name', null, ['class' => 'form-control', 'placeholder' => 'Photo']) !!}
     @if ($errors->has('image_name')) <p class="help-block">{{ $errors->first('image_name') }}</p> @endif
-    @if (!empty($artical->image_name))
-    	<img src="{{asset('uploads/articals').'/'.$artical->id.'/'.$artical->image_name}}" width="50" height="50" alt="{{$artical->image_name}}"/>
+    @if (!empty($artical->upload_path))
+    	<img src="<?php echo $artical->upload_path ?>" width="50" height="50" alt="{{$artical->title}}"/>
     @endif
 </div>
 <!-- Text body Form Input -->

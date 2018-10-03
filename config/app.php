@@ -162,6 +162,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -235,6 +236,8 @@ return [
         'Html' => Collective\Html\HtmlFacade::class,
         'Image' => Intervention\Image\Facades\Image::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'JWTAuth' => 'Tymon\JWTAuth\Facades\JWTAuth',
+        'JWTFactory' => 'Tymon\JWTAuth\Facades\JWTFactory',
     ],
 
 ];
