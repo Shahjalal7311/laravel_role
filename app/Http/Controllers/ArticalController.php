@@ -72,7 +72,6 @@ class ArticalController extends Controller
                 $artical = Artical::findOrFail($data->id);
                  $file = $request->file('image_name');
                  // $url = 'storage/app/';
-                 //$url = 'https://rv-inspect'.'.s3' .'.ap-northeast-1'. '.amazonaws.com/';
                  $url = 'https://'.env('AWS_BUCKET').'.s3.' .env('AWS_REGION'). '.amazonaws.com/';
                  $filePath = 'development/laravel/articals/'.$data->id .'/';
                  $uploadPath = 'development/laravel/articals/'.$data->id .'/'.$name;
