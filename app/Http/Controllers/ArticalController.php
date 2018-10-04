@@ -125,7 +125,6 @@ class ArticalController extends Controller
         $this->validate($request, [
             'title' => 'required|min:10',
             'body' => 'required|min:20',
-            'image_name' => 'required',
         ]);
 
         $me = $request->user();
@@ -137,18 +136,24 @@ class ArticalController extends Controller
         
         $check_has = $request->hasFile('image_name');
         $file = $request->file('image_name');
-        $name = time().'.'.$file->getClientOriginalExtension();
-        $url = 'https://'.env('AWS_BUCKET').'.s3.' .env('AWS_REGION'). '.amazonaws.com/';
-        $filePath = 'development/laravel/articals/'.$artical->id .'/';
-        $uploadPath = 'development/laravel/articals/'.$artical->id .'/'.$name;
-        $path = $url.$uploadPath;
-        // $url = 'storage/app/';
-        // Storage::disk('public')->put($filePath.$name, file_get_contents($file),'public');
-        Storage::disk('s3')->put($filePath.$name, file_get_contents($file),'public');
+        if(!empty($file)){
+            $name = time().'.'.$file->getClientOriginalExtension();
+            $url = 'https://'.env('AWS_BUCKET').'.s3.' .env('AWS_REGION'). '.amazonaws.com/';
+            $filePath = 'development/laravel/articals/'.$artical->id .'/';
+            $uploadPath = 'development/laravel/articals/'.$artical->id .'/'.$name;
+            $path = $url.$uploadPath;
+            // $url = 'storage/app/';
+            // Storage::disk('public')->put($filePath.$name, file_get_contents($file),'public');
+            Storage::disk('s3')->put($filePath.$name, file_get_contents($file),'public');
+        }else{
+            $name = $artical->image_name;
+            $path = $artical->upload_path;
+        }
+        
         $data = Artical::where('id',$artical->id)
                 ->update([
-                    'title'=>$artical->title,
-                    'body'=>$artical->body,
+                    'title'=>$$request->title,
+                    'body'=>$request->body,
                     'image_name'=>$name,
                     'upload_path'=>$path,
                 ]);
@@ -170,18 +175,20 @@ class ArticalController extends Controller
     {
         $me = Auth::user();
 
-        if($me->hasRole('admin')){
-            $artical = Artical::findorFail($artical->id);
-        }else{
-            $artical = $me->artical()->findorFail($artical->id);
+        if( $me->hasRole('Admin') ) {
+            $artical = Artical::findOrFail($artical->id);
+        } else {
+            $artical = $me->articals()->findOrFail($artical->id);
         }
-
-        Artical::where('id',$artical->id)
+        Artical::where('id', $artical->id)
                 ->update([
                     'is_delete'=>'0',
-                    // 'delete_by'=>$artical->user_id,
+                    'delete_by'=>$artical->user_id,
                 ]);
-        flash()->success('Post has been deleted.');
-        return redirect()->route('articals.index');        
+        // $post->delete();
+
+        flash()->success('artical has been deleted.');
+
+        return redirect()->route('articals.index');   
     }
 }

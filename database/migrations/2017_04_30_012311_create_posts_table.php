@@ -19,7 +19,8 @@ class CreatePostsTable extends Migration
             $table->string('image_name')->nullable();
             $table->string('image_path')->nullable();
             $table->integer('is_delete')->default('1');
-            $table->text('body');
+            $table->integer('delete_by')->nullable();
+            $table->longText('body');
             $table->unsignedInteger('user_id');
 
             $table->foreign('user_id')

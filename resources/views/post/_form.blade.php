@@ -11,7 +11,7 @@
     {!! Form::file('image_name', null, ['class' => 'form-control', 'placeholder' => 'Photo']) !!}
     @if ($errors->has('image_name')) <p class="help-block">{{ $errors->first('image_name') }}</p> @endif
     @if (!empty($post->image_name))
-    	<img src="{{asset('uploads/posts').'/'.$post->id.'/'.$post->image_name}}" width="50" height="50" alt="{{$post->image_name}}"/>
+    	<img src="{{asset('storage/posts').'/'.$post->id.'/'.$post->image_name}}" width="50" height="50" alt="{{$post->image_name}}"/>
     @endif
 </div>
 <!-- Text body Form Input -->

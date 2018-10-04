@@ -17,10 +17,11 @@ class CreateArticalsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->string('title');
-            $table->text('body');
+            $table->longText('body');
             $table->string('image_name');
             $table->string('thum_img');
             $table->integer('is_delete')->default('1');
+            $table->integer('delete_by')->nullable();
             $table->foreign('user_id')
                 ->references('id')->on('users')
                 ->onDelete('cascade');

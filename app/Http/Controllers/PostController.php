@@ -45,7 +45,8 @@ class PostController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
-     */
+    */
+    
     public function store(Request $request)
     {
         $todate = date("Y-m-d-H-i-s");
@@ -65,19 +66,25 @@ class PostController extends Controller
             'image_name'=>$name,
         ];
         
-        $save = $request->user()->posts()->create($post_data);
-        if(!empty($save)){
-            $artical = Post::findOrFail($save->id);
-             $file = $request->file('image_name');
-             $url = 'storage/posts/';
-             //https://s3.' .'ap-northeast-1'. '.amazonaws.com/' .'rv-inspect' . '/';
-             // $name = time() . $file->getClientOriginalName();
-             
-             $filePath = 'posts/'.$save->id .'/'. $name;
-             $path = $url.$filePath;
-             Storage::disk('public')->put($filePath, file_get_contents($file));
-             Post::where('id', $save->id)->update([
-                  'image_path'=>$path,
+        $post = $request->user()->posts()->create($post_data);
+        if(!empty($post)){
+            $artical = Post::findOrFail($post->id);
+            $file = $request->file('image_name');
+            //Local File Upload
+            $url_local = 'storage/posts/';
+            $name = time().'.'.$file->getClientOriginalExtension();
+            $filePath = 'posts/'.$post->id .'/'.$name;
+            $path_local = $url_local.$filePath;
+
+            // AWS File Upload
+            // $url = 'https://'.env('AWS_BUCKET').'.s3.' .env('AWS_REGION'). '.amazonaws.com/';
+            // $uploadPath = 'development/laravel/posts/'.$post->id .'/'.$name;
+            // $path = $url.$uploadPath;
+
+            Storage::disk('public')->put($filePath, file_get_contents($file));
+             // Storage::disk('s3')->put($uploadPath.$name, file_get_contents($file),'public');
+            Post::where('id', $post->id)->update([
+                  'image_path'=>$path_local,
                 ]);
          }
         flash('Post has been added');
@@ -133,8 +140,7 @@ class PostController extends Controller
         $todate = date("Y-m-d-H-i-s");
         $this->validate($request, [
             'title' => 'required|min:10',
-            'body' => 'required|min:20',
-            'image_name' => 'required',
+            'body' => 'required|min:20'
         ]);
 
         $me = $request->user();
@@ -145,21 +151,32 @@ class PostController extends Controller
         }
 
         $check_has = $request->hasFile('image_name');
-        $file_name = $request->file('image_name');
-        $name = $todate.'.'.$file_name->getClientOriginalExtension();
-        $path_url = public_path('/uploads/posts');
-        $path = $path_url.'/'.$post->id;
-        $imagename = FileUploadComponent::upload($check_has,$file_name, $path, $name);
+        $file = $request->file('image_name');
+        if(!empty($file)){
+            $name = time().'.'.$file->getClientOriginalExtension();
+            //Local File Upload
+            $url_local = 'storage/posts/';
+            $filePath = 'posts/'.$post->id .'/'.$name;
+            $path_local = $url_local.$filePath;
+            // AWS file upload
+            // $url = 'https://'.env('AWS_BUCKET').'.s3.' .env('AWS_REGION'). '.amazonaws.com/';
+            // $uploadPath = 'development/laravel/posts/'.$post->id .'/'.$name;
+            // $path = $url.$uploadPath;
+            Storage::disk('public')->put($filePath, file_get_contents($file),'public');
+            // Storage::disk('s3')->put($uploadPath.$name, file_get_contents($file),'public');
+        }else{
+            $name = $post->image_name;
+            $path = $post->upload_path;
+        }
         $post_data = [
-            'title'=>$post->title,
-            'body'=>$post->body,
-            'image_name'=>$imagename,
+            'title'=>$request->title,
+            'body'=>$request->body,
+            'image_name'=>$name,
+            'upload_path' => $path
         ];
 
         $post->update($post_data);
-
         flash()->success('Post has been updated.');
-
         return redirect()->route('posts.index');
     }
 
@@ -172,7 +189,6 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         $me = Auth::user();
-
         if( $me->hasRole('Admin') ) {
             $post = Post::findOrFail($post->id);
         } else {
@@ -245,9 +261,7 @@ class PostController extends Controller
                         }
                     }
                 }
- 
                 return back();
- 
             }else {
                 Session::flash('error', 'File is a '.$extension.' file.!! Please upload a valid xls/csv file..!!');
                 return back();
