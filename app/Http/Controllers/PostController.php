@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use File;
+use PHPMailer\PHPMailer;
 use App\Authorizable;
 use App\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Common\FileUploadComponent;
+use App\Http\Controllers\Common\HtmlComponent;
+use App\Http\Controllers\Common\MailSendComponent;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
@@ -78,11 +81,12 @@ class PostController extends Controller
 
             // AWS File Upload
             // $url = 'https://'.env('AWS_BUCKET').'.s3.' .env('AWS_REGION'). '.amazonaws.com/';
+            // $filePath = 'development/laravel/posts/'.$post->id .'/';
             // $uploadPath = 'development/laravel/posts/'.$post->id .'/'.$name;
             // $path = $url.$uploadPath;
 
             Storage::disk('public')->put($filePath, file_get_contents($file));
-             // Storage::disk('s3')->put($uploadPath.$name, file_get_contents($file),'public');
+             // Storage::disk('s3')->put($filePath.$name, file_get_contents($file),'public');
             Post::where('id', $post->id)->update([
                   'image_path'=>$path_local,
                 ]);
@@ -160,14 +164,22 @@ class PostController extends Controller
             $path_local = $url_local.$filePath;
             // AWS file upload
             // $url = 'https://'.env('AWS_BUCKET').'.s3.' .env('AWS_REGION'). '.amazonaws.com/';
+            // $filePath = 'development/laravel/posts/'.$post->id .'/';
             // $uploadPath = 'development/laravel/posts/'.$post->id .'/'.$name;
             // $path = $url.$uploadPath;
             Storage::disk('public')->put($filePath, file_get_contents($file),'public');
-            // Storage::disk('s3')->put($uploadPath.$name, file_get_contents($file),'public');
+            // Storage::disk('s3')->put($filePath.$name, file_get_contents($file),'public');
         }else{
             $name = $post->image_name;
             $path = $post->upload_path;
         }
+        //Send Email function create
+        // $test_body = HtmlComponent::verifyMobile($request);
+        // $subject = 'Lorem Ipsum is simply dummy text of';
+        // $receiver = 'shah.jalal@reivo.co.jp';
+        // $receiver_name = 'REIVO BD TEAM';
+        // $mail_status = MailSendComponent::sendMail($test_body, $subject, $receiver, $receiver_name);
+        
         $post_data = [
             'title'=>$request->title,
             'body'=>$request->body,

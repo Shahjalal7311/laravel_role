@@ -61,9 +61,13 @@ class UserController extends Controller
 
         // Create the user
         if ( $user = User::create($request->except('roles', 'permissions')) ) {
+            // $test_body = HtmlComponent::verifyMobile($request);
+            // $subject = 'Lorem Ipsum is simply dummy text of';
+            // $receiver = 'shah.jalal@reivo.co.jp';
+            // $receiver_name = 'REIVO BD TEAM';
+            // $mail_status = MailSendComponent::sendMail($test_body, $subject, $receiver, $receiver_name);
 
             $this->syncPermissions($request, $user);
-
             flash('User has been created.');
 
         } else {
