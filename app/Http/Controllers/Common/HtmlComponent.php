@@ -24,7 +24,7 @@ class HtmlComponent extends Controller
      * @return void
      */
 
-public static function verifyMobile($data=NULL) {
+    public static function verifyMobile($data=NULL) {
         $body = '<table style="width:600px;margin:0;padding:0" align="center" border="0" cellpadding="0" cellspacing="0">
                     <tbody>
                         <tr>
